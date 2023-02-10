@@ -97,6 +97,7 @@ class PostPagesTests(TestCase):
 
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
+        temlate_for_edit = 'posts/create_post.html'
         templates_pages_names = {
             'posts/index.html': reverse('posts:index'),
             'posts/group_list.html': (
@@ -109,7 +110,7 @@ class PostPagesTests(TestCase):
                 reverse('posts:post_detail', kwargs={'post_id': self.post.id})
             ),
             'posts/create_post.html': reverse('posts:post_create'),
-            'posts/create_post.html': (
+            temlate_for_edit: (
                 reverse('posts:post_edit', kwargs={'post_id': self.post.id})
             ),
         }
