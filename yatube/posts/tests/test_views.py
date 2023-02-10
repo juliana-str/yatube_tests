@@ -104,7 +104,8 @@ class PostPagesTests(TestCase):
         templates_pages_names = {
             'posts/index.html': reverse('posts:index'),
             'posts/group_list.html': (
-                reverse('posts:group_list', kwargs={'slug': self.group.slug})
+                reverse('posts:group_list',
+                        kwargs={'slug': self.group_list[2].slug})
             ),
             'posts/profile.html': (
                 reverse('posts:profile', kwargs={'username': self.user})
@@ -129,7 +130,8 @@ class PostPagesTests(TestCase):
                 reverse('posts:profile', kwargs={'username': self.user})
             ),
             'posts/group_list.html': (
-                reverse('posts:group_list', kwargs={'slug': self.group.slug})
+                reverse('posts:group_list',
+                        kwargs={'slug': self.group_list[2].slug})
             ),
         }
         for template, reverse_name in templates.items():
@@ -150,9 +152,10 @@ class PostPagesTests(TestCase):
     def test_group_post_page_show_correct_context(self):
         """Шаблон group_list сформирован с правильным контекстом."""
         response = self.authorized_client.get(
-            reverse('posts:group_list', kwargs={'slug': self.group.slug})
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group_list[1].slug})
         )
-        self.assertEqual(response.context.get('group'), self.group)
+        self.assertEqual(response.context.get('group'), self.group_list[1])
 
     def test_profile_pages_show_correct_context(self):
         """Шаблон profile сформирован с правильным контекстом."""
