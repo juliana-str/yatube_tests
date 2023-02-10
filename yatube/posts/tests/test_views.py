@@ -32,11 +32,11 @@ class PaginatorViewsTest(TestCase):
         )
         cls.posts_list = [
             Post.objects.create(
-                text=f'POST_TEXT  {(i+1)}',
+                text=POST_TEXT,
                 author=cls.user,
                 group=cls.group
             )
-            for i in range(
+            for _ in range(
                 FIRST_PAGE_COUNT
                 + SECOND_PAGE_COUNT)
         ]
@@ -79,12 +79,15 @@ class PostPagesTests(TestCase):
         cls.user = User.objects.create_user(username=USER_USERNAME)
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
+        cls.group_list = [
+            Group.objects.create(
+                title=f'{GROUP_TITLE} {i}',
+                slug=f'{GROUP_SLUG}_{i}',
+                description=GROUP_DESCRIPTION,
+            )
+            for i in range(SECOND_PAGE_COUNT)
 
-        cls.group = Group.objects.create(
-            title=GROUP_TITLE,
-            slug=GROUP_SLUG,
-            description=GROUP_DESCRIPTION,
-        )
+        ]
         cls.post = Post.objects.create(
             text=POST_TEXT,
             author=cls.user,
@@ -92,7 +95,7 @@ class PostPagesTests(TestCase):
         cls.test_post = Post.objects.create(
             text=POST_TEXT,
             author=cls.user,
-            group=cls.group
+            group=cls.group_list[1]
         )
 
     def test_pages_uses_correct_template(self):
@@ -226,9 +229,19 @@ class PostPagesTests(TestCase):
         urls = (
             reverse('posts:index'),
             reverse('posts:profile', kwargs={'username': self.user}),
-            reverse('posts:group_list', kwargs={'slug': self.group.slug}),
+            reverse('posts:group_list', kwargs={'slug': self.group_list[1].slug}),
         )
         for url in urls:
             with self.subTest(url=url):
                 response = self.authorized_client.get(url)
                 self.assertIn(self.test_post, response.context['page_obj'])
+
+    def test_post_not_in_other_groups(self):
+        urls = (
+                reverse('posts:group_list', kwargs={'slug': self.group_list[0].slug}),
+                reverse('posts:group_list', kwargs={'slug': self.group_list[2].slug}),
+        )
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.authorized_client.get(url)
+                self.assertNotIn(self.test_post, response.context['page_obj'])
