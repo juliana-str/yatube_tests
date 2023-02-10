@@ -240,10 +240,10 @@ class PostPagesTests(TestCase):
 
     def test_post_not_in_other_groups(self):
         urls = (
-                reverse('posts:group_list',
-                        kwargs={'slug': self.group_list[0].slug}),
-                reverse('posts:group_list',
-                        kwargs={'slug': self.group_list[2].slug}),
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group_list[0].slug}),
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group_list[2].slug}),
         )
         for url in urls:
             with self.subTest(url=url):
