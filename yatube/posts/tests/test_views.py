@@ -153,10 +153,9 @@ class PostPagesTests(TestCase):
 
     def test_post_not_in_other_groups(self):
         """Пост только в нужной группе."""
-        url = reverse('posts:group_list',
-                      kwargs={'slug': self.other_group.slug}),
+        url = (reverse('posts:group_list', kwargs={'slug': self.other_group.slug}))
         response = self.authorized_client.get(url)
-        self.assertNotIn(self.post, response.context.get('page_obj'))
+        self.assertNotIn(self.post, response.context['page_obj'])
 
     def test_post_create_show_correct_context(self):
         """Шаблон post_create сформирован с правильным контекстом."""
