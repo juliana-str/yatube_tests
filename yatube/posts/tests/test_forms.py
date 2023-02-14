@@ -1,48 +1,54 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase
+import shutil
+import tempfile
 
-from ..models import Group, Post
+from django.contrib.auth import get_user_model
+from django.test import Client, TestCase, override_settings
+from django.urls import reverse
+from django.conf import settings
+
+from ..models import Post
+
 
 User = get_user_model()
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
-class PostModelTest(TestCase):
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+class PostCreateFormTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='auth')
-        cls.group = Group.objects.create(
-            title='Тестовая группа',
-            slug='Тестовый слаг',
-            description='Тестовое описание',
+        Post.objects.create(
+            text='Тестовый текст',
+            group='test-group'
         )
-        cls.post = Post.objects.create(
-            author=cls.user,
-            text='Тестовый пост',
+        cls.form = PostCreateFormTests()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+
+    def setUp(self):
+        self.guest_client = Client()
+
+    def test_create_post(self):
+        """Валидная форма создает post."""
+        self.post_count = Post.objects.count()
+        form_data = {
+                'group': self.group,
+                'text': self.text,
+        }
+        response = self.guest_client.post(
+            reverse('posts:index'),
+            data=form_data,
+            follow=True
         )
-
-    def test_verbose_name(self):
-        """verbose_name в полях совпадает с ожидаемым."""
-        post = PostModelTest.post
-        field_verboses = {
-            'pub_date': 'Дата публикации',
-            'text': 'Текст поста',
-            'author': 'Автор',
-            'group': 'Группа',
-        }
-        for field, expected_value in field_verboses.items():
-            with self.subTest(field=field):
-                self.assertEqual(
-                    post._meta.get_field(field).verbose_name, expected_value)
-
-    def test_help_text(self):
-        """help_text в полях совпадает с ожидаемым."""
-        post = PostModelTest.post
-        field_help_texts = {
-            'text': 'Напишите свой пост',
-            'group': 'Группа, к которой будет относиться пост',
-        }
-        for field, expected_value in field_help_texts.items():
-            with self.subTest(field=field):
-                self.assertEqual(
-                    post._meta.get_field(field).help_text, expected_value)
+        self.assertRedirects(response, reverse('posts:post_create'))
+        self.assertEqual(Post.objects.count(), self.post_count + 1)
+        self.assertTrue(
+            Post.objects.filter(
+                group='test-group',
+                text='Тестовый текст',
+                ).exists()
+        )
