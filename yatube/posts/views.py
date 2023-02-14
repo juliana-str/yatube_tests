@@ -7,8 +7,6 @@ from .forms import PostForm
 from .models import Group, Post, User
 
 
-
-
 def get_page(request, post_list):
     paginator = Paginator(post_list, settings.POST_COUNT)
     page_number = request.GET.get('page')

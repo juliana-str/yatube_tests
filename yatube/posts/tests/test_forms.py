@@ -18,8 +18,6 @@ class PostCreateFormTests(TestCase):
         super().setUpClass()
         cls.guest_client = Client()
         cls.user = User.objects.create_user(username=USER_USERNAME)
-
-
         cls.authorised_client = Client()
         cls.authorised_client.force_login(cls.user)
         cls.group = Group.objects.create(
@@ -39,8 +37,8 @@ class PostCreateFormTests(TestCase):
         """Валидная форма создает пост."""
         self.post_count = Post.objects.count()
         form_data = {
-                'group': self.group.pk,
-                'text': self.post.text,
+            'group': self.group.pk,
+            'text': self.post.text,
         }
         response = self.authorised_client.post(
             reverse('posts:post_create'),
@@ -54,7 +52,7 @@ class PostCreateFormTests(TestCase):
             Post.objects.filter(
                 group=self.post.group,
                 text=self.post.text,
-                ).exists()
+            ).exists()
         )
 
     def test_post_edit(self):
@@ -62,8 +60,8 @@ class PostCreateFormTests(TestCase):
         self.post_count = Post.objects.count()
         self.text_edit = self.post.text + 'correct'
         form_edit_data = {
-                'group': self.group.pk,
-                'text': self.text_edit,
+            'group': self.group.pk,
+            'text': self.text_edit,
         }
         response = self.authorised_client.post(
             reverse('posts:post_edit',
@@ -72,7 +70,7 @@ class PostCreateFormTests(TestCase):
             follow=True
         )
         self.assertRedirects(response, reverse('posts:post_detail',
-                    kwargs={'post_id': self.post.pk}))
+                             kwargs={'post_id': self.post.pk}))
         self.assertEqual(Post.objects.count(), self.post_count)
         self.assertNotEqual(self.text_edit, self.post.text)
         self.assertTrue(
