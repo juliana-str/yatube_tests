@@ -62,7 +62,7 @@ class PostCreateFormTests(TestCase):
         self.post_count = Post.objects.count()
         self.text_edit = self.post.text + 'correct'
         form_edit_data = {
-                'group': self.group,
+                'group': self.group.pk,
                 'text': self.text_edit,
         }
         response = self.authorised_client.post(
