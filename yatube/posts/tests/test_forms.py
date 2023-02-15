@@ -52,6 +52,7 @@ class PostCreateFormTests(TestCase):
         last_post = Post.objects.last()
         self.assertEqual(last_post.text, self.the_post.text)
         self.assertEqual(last_post.group, self.the_post.group)
+        self.assertEqual(last_post.author, self.the_post.author)
 
     def test_post_edit(self):
         """Валидная форма редактирования поста"""
@@ -80,3 +81,4 @@ class PostCreateFormTests(TestCase):
 
         self.assertEqual(text_edit, last_post.text)
         self.assertEqual(another_group, last_post.group)
+        self.assertEqual(self.the_post.author, last_post.author)
