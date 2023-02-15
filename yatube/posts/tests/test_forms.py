@@ -79,4 +79,4 @@ class PostCreateFormTests(TestCase):
         edit_post = Post.objects.last()
         self.assertEqual(form_edit_data['text'], edit_post.text)
         self.assertEqual(another_group, edit_post.group)
-        self.assertEqual( self.the_post.author, edit_post.author)
+        self.assertEqual(self.the_post.author, edit_post.author)
