@@ -21,7 +21,6 @@ class PaginatorViewsTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.guest_client = Client()
         cls.user = User.objects.create_user(username=USER_USERNAME)
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
@@ -84,7 +83,6 @@ class PostPagesTests(TestCase):
             text=POST_TEXT,
             author=cls.user_author,
             group=cls.the_group,
-            pk=1
         )
 
     def test_pages_uses_correct_template(self):
