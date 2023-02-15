@@ -1,9 +1,6 @@
-from http import HTTPStatus
-
 from django.test import TestCase, Client
-from django.urls import reverse
 
-from ..forms import CreationForm, User
+from ..forms import User
 
 
 class CreationFormTest(TestCase):
@@ -18,7 +15,6 @@ class CreationFormTest(TestCase):
             email='test@test.ru'
         )
         cls.authorized_client.force_login(cls.user)
-
 
     def test_create_form_user(self):
         self.assertEqual(self.user.first_name, 'first_name')
