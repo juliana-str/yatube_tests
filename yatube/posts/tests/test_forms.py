@@ -38,7 +38,7 @@ class PostCreateFormTests(TestCase):
         post_count = Post.objects.count()
         form_data = {
             'group': self.the_group.pk,
-            'text': self.the_post.text,
+            'text': 'simple test',
         }
         response = self.authorised_client.post(
             reverse('posts:post_create'),
@@ -49,10 +49,11 @@ class PostCreateFormTests(TestCase):
         self.assertRedirects(response, reverse(
             'posts:profile', kwargs={'username': self.user}))
         self.assertEqual(Post.objects.count(), post_count + 1)
-        last_post = Post.objects.last()
-        self.assertEqual(last_post.text, self.the_post.text)
+        last_post = Post.objects.get(pk=post_count + 1)
         self.assertEqual(last_post.group, self.the_post.group)
         self.assertEqual(last_post.author, self.the_post.author)
+
+        self.assertEqual(last_post.text, 'simple test')
 
     def test_post_edit(self):
         """Валидная форма редактирования поста"""
@@ -76,7 +77,8 @@ class PostCreateFormTests(TestCase):
         self.assertRedirects(response, reverse('posts:post_detail',
                              kwargs={'post_id': self.the_post.pk}))
         self.assertEqual(Post.objects.count(), post_count)
-        edit_post = Post.objects.last()
+
+        edit_post = Post.objects.get(pk=self.the_post.pk)
         self.assertEqual(form_edit_data['text'], edit_post.text)
         self.assertEqual(another_group, edit_post.group)
         self.assertEqual(self.the_post.author, edit_post.author)
