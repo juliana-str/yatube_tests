@@ -32,18 +32,17 @@ class PostURLTests(TestCase):
         cls.post = Post.objects.create(
             text=POST_TEXT,
             author=cls.user_author,
-            pk=1
         )
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_urls = {
             '/': 'posts/index.html',
-            '/profile/Anonimus/': 'posts/profile.html',
-            '/posts/1/': 'posts/post_detail.html',
+            f'/profile/{USER_USERNAME}/': 'posts/profile.html',
+            f'/posts/{self.post.pk}/': 'posts/post_detail.html',
             '/create/': 'posts/create_post.html',
-            '/posts/1/edit/': 'posts/create_post.html',
-            '/group/test-slug/': 'posts/group_list.html'
+            f'/posts/{self.post.pk}/edit/': 'posts/create_post.html',
+            f'/group/{GROUP_SLUG}/': 'posts/group_list.html'
         }
         for address, template in templates_urls.items():
             with self.subTest(address=address):
@@ -54,17 +53,17 @@ class PostURLTests(TestCase):
         tests_datas = [
             ('/', self.guest_client, HTTPStatus.OK),
             ('/', self.authorized_client, HTTPStatus.OK),
-            ('/profile/Anonimus/', self.guest_client, HTTPStatus.OK),
-            ('/profile/Anonimus/', self.authorized_client, HTTPStatus.OK),
-            ('/posts/1/', self.guest_client, HTTPStatus.OK),
-            ('/posts/1/', self.authorized_client, HTTPStatus.OK),
+            (f'/profile/{USER_USERNAME}/', self.guest_client, HTTPStatus.OK),
+            (f'/profile/{USER_USERNAME}/', self.authorized_client, HTTPStatus.OK),
+            (f'/posts/{self.post.pk}/', self.guest_client, HTTPStatus.OK),
+            (f'/posts/{self.post.pk}/', self.authorized_client, HTTPStatus.OK),
             ('/create/', self.guest_client, HTTPStatus.FOUND),
             ('/create/', self.authorized_client, HTTPStatus.OK),
-            ('/posts/1/edit/', self.guest_client, HTTPStatus.FOUND),
-            ('/posts/1/edit/', self.authorized_client, HTTPStatus.FOUND),
-            ('/posts/1/edit/', self.author, HTTPStatus.OK),
-            ('/group/test-slug/', self.guest_client, HTTPStatus.OK),
-            ('/group/test-slug/', self.authorized_client, HTTPStatus.OK),
+            (f'/posts/{self.post.pk}/edit/', self.guest_client, HTTPStatus.FOUND),
+            (f'/posts/{self.post.pk}/edit/', self.authorized_client, HTTPStatus.FOUND),
+            (f'/posts/{self.post.pk}/edit/', self.author, HTTPStatus.OK),
+            (f'/group/{GROUP_SLUG}/', self.guest_client, HTTPStatus.OK),
+            (f'/group/{GROUP_SLUG}/', self.authorized_client, HTTPStatus.OK),
             ('/posts/unexisting_page/',
              self.guest_client,
              HTTPStatus.NOT_FOUND),
