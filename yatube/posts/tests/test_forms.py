@@ -76,7 +76,6 @@ class PostCreateFormTests(TestCase):
         self.assertRedirects(response, reverse('posts:post_detail',
                              kwargs={'post_id': self.the_post.pk}))
         self.assertEqual(Post.objects.count(), post_count)
-
         edit_post = Post.objects.get(pk=self.the_post.pk)
         self.assertEqual(form_edit_data['text'], edit_post.text)
         self.assertEqual(another_group, edit_post.group)
